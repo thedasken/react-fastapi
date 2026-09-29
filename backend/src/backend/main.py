@@ -23,7 +23,11 @@ async def lifespan(_application: FastAPI) -> AsyncGenerator:
     logger.info("Application stopped")
 
 
-app = FastAPIOffline(title=f"{settings.APP_NAME} API", lifespan=lifespan)
+app = FastAPIOffline(
+    title=f"{settings.APP_NAME} API",
+    version=settings.APP_VERSION,
+    lifespan=lifespan,
+)
 app.include_router(health_router)
 app.include_router(projects_router)
 

@@ -17,6 +17,7 @@ class CustomBaseSettings(BaseSettings):
 
 class Config(CustomBaseSettings):
     APP_NAME: str = "React FastAPI App"
+    APP_VERSION: str = "0.0.1"
     LOG_LEVEL: str = "INFO"
 
     PAGINATION_DEFAULT_PAGE_SIZE: int = 10

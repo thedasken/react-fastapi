@@ -1,11 +1,21 @@
-# Frontend
+# React + TypeScript + Vite + shadcn/ui
 
-React frontend built with Vite, TypeScript and Tailwind CSS.
+This is a template for a new Vite project with React, TypeScript, and shadcn/ui.
 
-## Commands
+## Adding components
+
+To add components to your app, run the following command:
 
 ```bash
-pnpm dev
-pnpm build
-pnpm lint
+npx shadcn@latest add button
+```
+
+This will place the ui components in the `src/components` directory.
+
+## Using components
+
+To use the components in your app, import them as follows:
+
+```tsx
+import { Button } from "@/components/ui/button"
 ```
