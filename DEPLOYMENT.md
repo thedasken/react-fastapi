@@ -78,4 +78,5 @@ Répéter cette commande après chaque déploiement qui ajoute une migration.
 - **404 après rechargement d’une page** : vérifier que le trafic arrive bien sur le service frontend et que `try_files` est présent dans `frontend/nginx.conf`.
 - **Indicateur serveur déconnecté** : vérifier `/api/health`, l’état du backend et les logs Nginx.
 - **Backend qui ne démarre pas** : vérifier `POSTGRES_*`, la connexion générée vers le service `db` et le healthcheck PostgreSQL.
+- **Frontend unhealthy au démarrage** : attendre la période de démarrage du healthcheck, puis vérifier les logs du conteneur frontend. Le healthcheck teste `http://127.0.0.1/` après une période initiale de 15 secondes.
 - **Erreur de migration** : vérifier que PostgreSQL est healthy avant d’exécuter `alembic upgrade head`.
