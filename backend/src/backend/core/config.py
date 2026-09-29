@@ -18,6 +18,8 @@ class CustomBaseSettings(BaseSettings):
 class Config(CustomBaseSettings):
     LOG_LEVEL: str = "INFO"
 
+    PAGINATION_DEFAULT_PAGE_SIZE: int = 10
+
     DATABASE_URL: str
     DATABASE_POOL_SIZE: int = 16
     DATABASE_POOL_TTL: int = 60 * 20  # 20 minutes

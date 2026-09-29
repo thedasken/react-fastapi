@@ -5,10 +5,11 @@ from fastapi import FastAPI
 from fastapi_offline import FastAPIOffline
 from starlette.middleware.cors import CORSMiddleware
 
-from backend.api.health import router as health_router
 from backend.core.config import settings
 from backend.core.database import dispose_database
+from backend.core.health import router as health_router
 from backend.core.logging import configure_logging, logger
+from backend.projects.router import router as projects_router
 
 
 configure_logging()
@@ -24,6 +25,7 @@ async def lifespan(_application: FastAPI) -> AsyncGenerator:
 
 app = FastAPIOffline(lifespan=lifespan)
 app.include_router(health_router)
+app.include_router(projects_router)
 
 app.add_middleware(
     CORSMiddleware,

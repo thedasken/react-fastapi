@@ -6,8 +6,13 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
+from sqlalchemy.orm import DeclarativeBase
 
 from backend.core.config import settings
+
+
+class Base(DeclarativeBase):
+    pass
 
 
 engine: AsyncEngine = create_async_engine(
@@ -26,7 +31,11 @@ session_factory = async_sessionmaker(
 
 async def get_db_session() -> AsyncIterator[AsyncSession]:
     async with session_factory() as session:
-        yield session
+        try:
+            yield session
+        except Exception:
+            await session.rollback()
+            raise
 
 
 async def dispose_database() -> None:
