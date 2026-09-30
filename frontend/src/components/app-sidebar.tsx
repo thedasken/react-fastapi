@@ -17,7 +17,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-import { CircleHelpIcon, HomeIcon } from "lucide-react"
+import { CircleHelpIcon, FolderKanbanIcon, HomeIcon } from "lucide-react"
 import { useAuth } from "@/auth"
 
 const data = {
@@ -27,6 +27,7 @@ const data = {
       url: "/",
       icon: <HomeIcon />,
     },
+    { title: "Projets", url: "/projects", icon: <FolderKanbanIcon /> },
   ],
   projects: [
     {

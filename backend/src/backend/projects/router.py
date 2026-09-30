@@ -7,7 +7,13 @@ from backend.core.config import settings
 from backend.core.database import get_db_session
 from backend.core.schemas import Page
 from backend.projects.repository import ProjectRepository
-from backend.projects.schemas import ProjectCreate, ProjectPatch, ProjectResponse
+from backend.projects.schemas import (
+    ProjectBulkDelete,
+    ProjectBulkDeleteResponse,
+    ProjectCreate,
+    ProjectPatch,
+    ProjectResponse,
+)
 
 
 router = APIRouter(prefix="/api/projects", tags=["projects"])
@@ -21,10 +27,19 @@ def get_repository(session: AsyncSession = Depends(get_db_session)) -> ProjectRe
 async def list_projects(
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=settings.PAGINATION_DEFAULT_PAGE_SIZE, ge=1, le=100),
+    search: str | None = Query(default=None),
     repository: ProjectRepository = Depends(get_repository),
 ) -> Page[ProjectResponse]:
-    items, total = await repository.list_paginated(page, page_size)
+    search = search.strip() if search else None
+    items, total = await repository.list_paginated(page, page_size, search)
     return Page(items=items, page=page, page_size=page_size, total=total)
+
+
+@router.delete("", response_model=ProjectBulkDeleteResponse)
+async def delete_projects(
+    payload: ProjectBulkDelete, repository: ProjectRepository = Depends(get_repository)
+) -> ProjectBulkDeleteResponse:
+    return ProjectBulkDeleteResponse(deleted=await repository.delete_many(payload.ids))
 
 
 @router.get("/{project_id}", response_model=ProjectResponse)

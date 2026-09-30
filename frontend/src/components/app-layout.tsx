@@ -5,6 +5,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage } from "@/co
 
 const breadcrumbs: Record<string, string> = {
   "/": "Accueil",
+  "/projects": "Projets",
   "/parametres": "Paramètres",
   "/profil": "Profil",
   "/a-propos": "A propos",

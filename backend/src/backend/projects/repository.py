@@ -10,14 +10,20 @@ class ProjectRepository:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
-    async def list_paginated(self, page: int, page_size: int) -> tuple[list[Project], int]:
+    async def list_paginated(
+        self, page: int, page_size: int, search: str | None = None
+    ) -> tuple[list[Project], int]:
+        filters = [Project.name.ilike(f"%{search}%")] if search else []
         items_result = await self.session.execute(
             select(Project)
+            .where(*filters)
             .order_by(Project.created_at, Project.id)
             .offset((page - 1) * page_size)
             .limit(page_size)
         )
-        total = await self.session.scalar(select(func.count()).select_from(Project))
+        total = await self.session.scalar(
+            select(func.count()).select_from(Project).where(*filters)
+        )
         return list(items_result.scalars().all()), total or 0
 
     async def get(self, project_id: UUID) -> Project | None:
@@ -48,3 +54,8 @@ class ProjectRepository:
         result = await self.session.execute(delete(Project).where(Project.id == project_id))
         await self.session.commit()
         return result.rowcount == 1
+
+    async def delete_many(self, project_ids: list[UUID]) -> int:
+        result = await self.session.execute(delete(Project).where(Project.id.in_(project_ids)))
+        await self.session.commit()
+        return result.rowcount or 0

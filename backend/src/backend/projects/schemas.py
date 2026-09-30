@@ -33,6 +33,14 @@ class ProjectPatch(BaseModel):
         return self
 
 
+class ProjectBulkDelete(BaseModel):
+    ids: list[UUID] = Field(min_length=1)
+
+
+class ProjectBulkDeleteResponse(BaseModel):
+    deleted: int
+
+
 class ProjectResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

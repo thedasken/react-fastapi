@@ -5,6 +5,7 @@ import { LoginPage } from "@/components/login-page"
 import { SettingsPage } from "@/components/settings-page"
 import { ProfilePage } from "@/components/profile-page"
 import { AboutPage } from "@/components/about-page"
+import { ProjectsPage } from "@/components/projects-page"
 
 function HomePage() {
   return (
@@ -18,6 +19,7 @@ function HomePage() {
 export function App() {
   return <BrowserRouter><AuthProvider><Routes><Route path="/login" element={<LoginRoute />} /><Route element={<ProtectedLayout />}>
     <Route path="/" element={<HomePage />} />
+    <Route path="/projects" element={<ProjectsPage />} />
     <Route path="/parametres" element={<SettingsPage />} />
     <Route path="/profil" element={<ProfilePage />} />
     <Route path="/a-propos" element={<AboutPage />} />
