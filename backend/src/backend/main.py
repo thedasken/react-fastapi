@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi_offline import FastAPIOffline
 from starlette.middleware.cors import CORSMiddleware
 
@@ -9,6 +9,8 @@ from backend.core.config import settings
 from backend.core.database import dispose_database
 from backend.core.health import router as health_router
 from backend.core.logging import configure_logging, logger
+from backend.auth import router as auth_router
+from backend.auth.security import get_current_user
 from backend.projects.router import router as projects_router
 
 
@@ -29,7 +31,8 @@ app = FastAPIOffline(
     lifespan=lifespan,
 )
 app.include_router(health_router)
-app.include_router(projects_router)
+app.include_router(auth_router)
+app.include_router(projects_router, dependencies=[Depends(get_current_user)])
 
 app.add_middleware(
     CORSMiddleware,

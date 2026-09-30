@@ -18,13 +18,9 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { CircleHelpIcon, HomeIcon } from "lucide-react"
+import { useAuth } from "@/auth"
 
 const data = {
-  user: {
-    name: "Utilisateur",
-    email: "utilisateur@example.com",
-    avatar: "",
-  },
   navMain: [
     {
       title: "Accueil",
@@ -75,6 +71,8 @@ function ServerStatus() {
 export function AppSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
+  const { user } = useAuth()
+  if (!user) return null
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
@@ -102,7 +100,7 @@ export function AppSidebar({
         <ServerStatus />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
   )

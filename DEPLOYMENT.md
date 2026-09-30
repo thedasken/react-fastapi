@@ -27,6 +27,18 @@ Ce guide décrit un déploiement avec un seul domaine public. Dokploy expose le 
    - `PUBLIC_URL`
    - `LOG_LEVEL`
    - `PAGINATION_DEFAULT_PAGE_SIZE`
+   - `AUTH_ADMIN_USERNAME`
+   - `AUTH_ADMIN_PASSWORD_HASH`
+   - `AUTH_JWT_SECRET`
+   - `AUTH_JWT_EXPIRE_MINUTES` (optionnel, 60 minutes par défaut)
+
+Pour générer le hash bcrypt du mot de passe admin :
+
+```bash
+uv run python -c 'import bcrypt; print(bcrypt.hashpw(input("Mot de passe: ").encode(), bcrypt.gensalt()).decode())'
+```
+
+Utiliser une valeur aléatoire longue pour `AUTH_JWT_SECRET` et ne jamais committer ces secrets.
 
 `PUBLIC_URL` doit contenir l’URL publique complète, par exemple `https://app.exemple.fr`.
 

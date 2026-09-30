@@ -5,6 +5,7 @@ import {
 } from "@/components/ui/avatar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { UserIcon } from "lucide-react"
+import { useAuth } from "@/auth"
 
 type Profile = {
   name: string
@@ -12,7 +13,11 @@ type Profile = {
   avatar: string
 }
 
-export function ProfilePage({ profile }: { profile: Profile }) {
+export function ProfilePage() {
+  const { user } = useAuth()
+  if (!user) return null
+
+  const profile: Profile = user
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">
       <div>

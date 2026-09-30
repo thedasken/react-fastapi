@@ -21,6 +21,8 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { ChevronsUpDownIcon, UserIcon, Settings2Icon, LogOutIcon } from "lucide-react"
+import { useNavigate } from "react-router-dom"
+import { useAuth } from "@/auth"
 
 export function NavUser({
   user,
@@ -32,6 +34,7 @@ export function NavUser({
   }
 }) {
   const navigate = useNavigate()
+  const { logout } = useAuth()
   const { isMobile } = useSidebar()
   return (
     <SidebarMenu>
@@ -88,7 +91,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive">
+            <DropdownMenuItem variant="destructive" onClick={() => { logout(); navigate("/login", { replace: true }) }}>
               <LogOutIcon />
               Déconnexion
             </DropdownMenuItem>
@@ -98,4 +101,3 @@ export function NavUser({
     </SidebarMenu>
   )
 }
-import { useNavigate } from "react-router-dom"

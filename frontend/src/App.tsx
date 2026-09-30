@@ -1,5 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
+import { AuthProvider, useAuth } from "@/auth"
 import { AppLayout } from "@/components/app-layout"
+import { LoginPage } from "@/components/login-page"
 import { SettingsPage } from "@/components/settings-page"
 import { ProfilePage } from "@/components/profile-page"
 import { AboutPage } from "@/components/about-page"
@@ -14,13 +16,23 @@ function HomePage() {
 }
 
 export function App() {
-  return <BrowserRouter><Routes><Route element={<AppLayout />}>
+  return <BrowserRouter><AuthProvider><Routes><Route path="/login" element={<LoginRoute />} /><Route element={<ProtectedLayout />}>
     <Route path="/" element={<HomePage />} />
     <Route path="/parametres" element={<SettingsPage />} />
-    <Route path="/profil" element={<ProfilePage profile={{ name: "Utilisateur", email: "utilisateur@example.com", avatar: "" }} />} />
+    <Route path="/profil" element={<ProfilePage />} />
     <Route path="/a-propos" element={<AboutPage />} />
     <Route path="*" element={<Navigate to="/" replace />} />
-  </Route></Routes></BrowserRouter>
+  </Route></Routes></AuthProvider></BrowserRouter>
+}
+
+function LoginRoute() {
+  const { isAuthenticated } = useAuth()
+  return isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />
+}
+
+function ProtectedLayout() {
+  const { isAuthenticated } = useAuth()
+  return isAuthenticated ? <AppLayout /> : <Navigate to="/login" replace />
 }
 
 export default App

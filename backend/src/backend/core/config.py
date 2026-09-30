@@ -31,5 +31,10 @@ class Config(CustomBaseSettings):
     CORS_ORIGINS_REGEX: str | None = None
     CORS_HEADERS: list[str] = ["*"]
 
+    AUTH_ADMIN_USERNAME: str = "admin"
+    AUTH_ADMIN_PASSWORD_HASH: str
+    AUTH_JWT_SECRET: str
+    AUTH_JWT_EXPIRE_MINUTES: int = 60
+
 
 settings = Config()  # pyright: ignore[reportCallIssue]
