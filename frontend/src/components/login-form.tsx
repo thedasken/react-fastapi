@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { useAuth } from "@/auth"
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
-  const { login } = useAuth()
+  const { login, sessionExpired } = useAuth()
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
@@ -25,6 +25,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
       <CardContent><form onSubmit={handleSubmit}><FieldGroup>
         <Field><FieldLabel htmlFor="username">Identifiant</FieldLabel><Input id="username" value={username} onChange={(event) => setUsername(event.target.value)} required autoComplete="username" autoFocus /></Field>
         <Field><FieldLabel htmlFor="password">Mot de passe</FieldLabel><Input id="password" type="password" value={password} onChange={(event) => setPassword(event.target.value)} required autoComplete="current-password" /></Field>
+        {sessionExpired && <FieldDescription>Votre session a expiré. Veuillez vous reconnecter.</FieldDescription>}
         {error && <FieldDescription className="text-destructive">{error}</FieldDescription>}
         <Field><Button type="submit" disabled={pending}>{pending ? "Connexion…" : "Se connecter"}</Button></Field>
       </FieldGroup></form></CardContent>

@@ -14,7 +14,9 @@ export async function apiFetch(path: string, init: RequestInit = {}): Promise<Re
   const headers = new Headers(init.headers)
   const token = getAccessToken()
   if (token) headers.set("Authorization", `Bearer ${token}`)
-  return fetch(`${API_ROOT}${path}`, { ...init, headers })
+  const response = await fetch(`${API_ROOT}${path}`, { ...init, headers })
+  if (token && response.status === 401) window.dispatchEvent(new Event("session-expired"))
+  return response
 }
 
 async function apiJson<T>(path: string, init?: RequestInit): Promise<T> {

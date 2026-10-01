@@ -1,11 +1,12 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useMemo, useState } from "react"
+import { createContext, useContext, useEffect, useMemo, useState } from "react"
 import { login as requestLogin } from "@/lib/api"
 
 type AuthUser = { name: string; email: string; avatar: string }
 type AuthContextValue = {
   user: AuthUser | null
   isAuthenticated: boolean
+  sessionExpired: boolean
   login: (username: string, password: string) => Promise<void>
   logout: () => void
 }
@@ -16,23 +17,47 @@ function createUser(username: string): AuthUser {
 
 const AuthContext = createContext<AuthContextValue | null>(null)
 
-function userFromStorage(): AuthUser | null {
-  const token = sessionStorage.getItem("access_token")
-  if (!token) return null
+function initialAuthState(): { user: AuthUser | null; sessionExpired: boolean } {
+  let token: string | null
   try {
-    const payload = JSON.parse(atob(token.split(".")[1])) as { sub?: string }
-    return payload.sub ? createUser(payload.sub) : null
+    token = sessionStorage.getItem("access_token")
   } catch {
-    return null
+    return { user: null, sessionExpired: false }
+  }
+  if (!token) return { user: null, sessionExpired: false }
+  try {
+    const payloadPart = token.split(".")[1]
+    if (!payloadPart) throw new Error("Invalid token")
+    const payload = JSON.parse(atob(payloadPart.replace(/-/g, "+").replace(/_/g, "/"))) as { sub?: string; exp?: number }
+    if (!payload.sub || typeof payload.exp !== "number" || payload.exp <= Math.floor(Date.now() / 1000)) throw new Error("Expired token")
+    return { user: createUser(payload.sub), sessionExpired: false }
+  } catch {
+    sessionStorage.removeItem("access_token")
+    sessionStorage.removeItem("username")
+    return { user: null, sessionExpired: true }
   }
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(userFromStorage)
+  const [initialState] = useState(initialAuthState)
+  const [user, setUser] = useState<AuthUser | null>(initialState.user)
+  const [sessionExpired, setSessionExpired] = useState(initialState.sessionExpired)
+  useEffect(() => {
+    const handleSessionExpired = () => {
+      sessionStorage.removeItem("access_token")
+      sessionStorage.removeItem("username")
+      setUser(null)
+      setSessionExpired(true)
+    }
+    window.addEventListener("session-expired", handleSessionExpired)
+    return () => window.removeEventListener("session-expired", handleSessionExpired)
+  }, [])
   const value = useMemo<AuthContextValue>(() => ({
     user,
     isAuthenticated: Boolean(user && sessionStorage.getItem("access_token")),
+    sessionExpired,
     async login(username, password) {
+      setSessionExpired(false)
       const result = await requestLogin(username, password)
       sessionStorage.setItem("access_token", result.access_token)
       sessionStorage.setItem("username", result.username)
@@ -42,8 +67,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       sessionStorage.removeItem("access_token")
       sessionStorage.removeItem("username")
       setUser(null)
+      setSessionExpired(false)
     },
-  }), [user])
+  }), [user, sessionExpired])
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
